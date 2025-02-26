@@ -12,7 +12,7 @@ void ssd1306_i2c_init(ssd1306_t *ssd)
     gpio_pull_up(I2C_SCL); 
 
     // Inicializar e configurar display
-    ssd1306_init(ssd, WIDTH, HEIGHT, false, endereco, I2C_PORT); 
+    ssd1306_init(ssd, DISPLAY_WIDTH, DISPLAY_HEIGHT, false, endereco, I2C_PORT); 
     ssd1306_config(ssd); 
     ssd1306_send_data(ssd);
   
@@ -40,7 +40,7 @@ void ssd1306_config(ssd1306_t *ssd) {
   ssd1306_command(ssd, SET_DISP_START_LINE | 0x00);
   ssd1306_command(ssd, SET_SEG_REMAP | 0x01);
   ssd1306_command(ssd, SET_MUX_RATIO);
-  ssd1306_command(ssd, HEIGHT - 1);
+  ssd1306_command(ssd, DISPLAY_HEIGHT - 1);
   ssd1306_command(ssd, SET_COM_OUT_DIR | 0x08);
   ssd1306_command(ssd, SET_DISP_OFFSET);
   ssd1306_command(ssd, 0x00);
@@ -105,4 +105,39 @@ void ssd1306_fill(ssd1306_t *ssd, bool value) {
             ssd1306_pixel(ssd, x, y, value);
         }
     }
+}
+
+void ssd1306_hline(ssd1306_t *ssd, uint8_t x0, uint8_t x1, uint8_t y, bool value) {
+  for (uint8_t x = x0; x <= x1; ++x)
+    ssd1306_pixel(ssd, x, y, value);
+}
+
+void ssd1306_vline(ssd1306_t *ssd, uint8_t x, uint8_t y0, uint8_t y1, bool value) {
+  for (uint8_t y = y0; y <= y1; ++y)
+    ssd1306_pixel(ssd, x, y, value);
+}
+
+void ssd1306_draw_recipient(ssd1306_t *ssd, uint8_t width, uint8_t height, uint8_t fill_height)
+{ 
+  uint8_t bleft_x = (DISPLAY_WIDTH / 2) - round(width / 2.0) - 1;
+  uint8_t bright_x = bleft_x + width + 1;
+  limitar(&bleft_x, 1, DISPLAY_WIDTH - 1);
+  limitar(&bright_x, 1, DISPLAY_WIDTH - 1);
+
+  uint8_t line_y = DISPLAY_HEIGHT - 1;
+  uint8_t height_y = line_y - height;
+  limitar(&height_y, 1, DISPLAY_HEIGHT - 1);
+
+  ssd1306_hline(ssd, bleft_x + 1, bright_x - 1, line_y, true);
+  ssd1306_vline(ssd, bleft_x, height_y, line_y, true);
+  ssd1306_vline(ssd, bright_x, height_y, line_y, true);
+
+  if (fill_height > 0)
+  {
+    limitar(&fill_height, 0, height - FILL_HEIGHT_DIF);
+    for (uint8_t i = line_y - 1; i > line_y - fill_height ; i--)
+    {
+      ssd1306_hline(ssd, bleft_x + 1, bright_x - 1, i, true);
+    }
+  }
 }

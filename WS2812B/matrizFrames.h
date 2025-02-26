@@ -1,5 +1,5 @@
-#ifndef MATRIZNUMS
-#define MATRIZNUMS
+#ifndef MATRIZFRAMES
+#define MATRIZFRAMES
 
 #include "matriz.h"
 

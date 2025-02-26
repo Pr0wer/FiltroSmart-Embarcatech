@@ -2,16 +2,20 @@
 #define SSD1306
 
 #include <stdlib.h>
+#include <math.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
+#include "Helpers/help.h"
 
-#define WIDTH 128
-#define HEIGHT 64
+#define DISPLAY_WIDTH 128
+#define DISPLAY_HEIGHT 64
 
 #define I2C_PORT i2c1
 #define I2C_SDA 14
 #define I2C_SCL 15
 #define endereco 0x3C
+
+#define FILL_HEIGHT_DIF 2
 
 typedef enum {
   SET_CONTRAST = 0x81,
@@ -50,5 +54,8 @@ void ssd1306_send_data(ssd1306_t *ssd);
 
 void ssd1306_pixel(ssd1306_t *ssd, uint8_t x, uint8_t y, bool value);
 void ssd1306_fill(ssd1306_t *ssd, bool value);
+void ssd1306_hline(ssd1306_t *ssd, uint8_t x0, uint8_t x1, uint8_t y, bool value);
+void ssd1306_vline(ssd1306_t *ssd, uint8_t x, uint8_t y0, uint8_t y1, bool value);
+void ssd1306_draw_recipient(ssd1306_t *ssd, uint8_t width, uint8_t height, uint8_t fill_height);
 
 #endif

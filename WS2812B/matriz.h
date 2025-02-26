@@ -117,7 +117,7 @@ void desenharFrame(const uint8_t frame[MATRIZ_ROWS][MATRIZ_COLS], uint8_t r, uin
       // Liga o LED na cor definida caso o valor lógico desse pixel seja 1 (LED aceso)
       if (frame[linha][coluna])
       {
-        alterarLed(index, r, b, g);
+        alterarLed(index, r, g, b);
       }
       else
       {
