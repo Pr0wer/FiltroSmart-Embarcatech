@@ -119,25 +119,32 @@ void ssd1306_vline(ssd1306_t *ssd, uint8_t x, uint8_t y0, uint8_t y1, bool value
 
 void ssd1306_draw_recipient(ssd1306_t *ssd, uint8_t width, uint8_t height, uint8_t fill_height)
 { 
-  uint8_t bleft_x = (DISPLAY_WIDTH / 2) - round(width / 2.0) - 1;
-  uint8_t bright_x = bleft_x + width + 1;
-  limitar(&bleft_x, 1, DISPLAY_WIDTH - 1);
-  limitar(&bright_x, 1, DISPLAY_WIDTH - 1);
+    // Obter pontos de referência das colunas (Inferior esquerdo e direito)
+    uint8_t bleft_x = (DISPLAY_WIDTH / 2) - round(width / 2.0) - 1;
+    uint8_t bright_x = bleft_x + width + 1;
+    limitar(&bleft_x, 1, DISPLAY_WIDTH - 1);
+    limitar(&bright_x, 1, DISPLAY_WIDTH - 1);
 
-  uint8_t line_y = DISPLAY_HEIGHT - 1;
-  uint8_t height_y = line_y - height;
-  limitar(&height_y, 1, DISPLAY_HEIGHT - 1);
+    // Obter pontos de referência das linhas
+    uint8_t line_y = DISPLAY_HEIGHT - 1;
+    uint8_t height_y = line_y - height;
+    limitar(&height_y, 1, DISPLAY_HEIGHT - 1);
 
-  ssd1306_hline(ssd, bleft_x + 1, bright_x - 1, line_y, true);
-  ssd1306_vline(ssd, bleft_x, height_y, line_y, true);
-  ssd1306_vline(ssd, bright_x, height_y, line_y, true);
+    // Desenhar recipiente com largura um pouco maior para manter largura desejada do copo
+    ssd1306_hline(ssd, bleft_x + 1, bright_x - 1, line_y, true);
+    ssd1306_vline(ssd, bleft_x, height_y, line_y, true);
+    ssd1306_vline(ssd, bright_x, height_y, line_y, true);
 
-  if (fill_height > 0)
-  {
-    limitar(&fill_height, 0, height - FILL_HEIGHT_DIF);
-    for (uint8_t i = line_y - 1; i > line_y - fill_height ; i--)
-    {
-      ssd1306_hline(ssd, bleft_x + 1, bright_x - 1, i, true);
+    // Se o recipiente deve ser preenchido
+    if (fill_height > 0)
+    {    
+        // Limitar altura do preenchimento com a máxima
+        limitar(&fill_height, 0, height - FILL_HEIGHT_DIF);
+
+        // Adicionar linha interior no recipiente até atinjir a altura desejada
+        for (uint8_t i = line_y - 1; i > line_y - fill_height ; i--)
+        {
+          ssd1306_hline(ssd, bleft_x + 1, bright_x - 1, i, true);
+        }
     }
-  }
 }
